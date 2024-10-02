@@ -1,11 +1,16 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
 
-const TextInputExample = () => {
+const Stack = createStackNavigator();
+
+const SignInScreen = () => {
   const [number, setNumber] = React.useState('');
+  const navigation = useNavigation(); // Khai báo navigation
 
   const formatPhoneNumber = (input) => {
-    // Chỉ cho phép các ký tự số
     const cleaned = input.replace(/\D/g, '');
     const match = cleaned.match(/^(\d{0,3})(\d{0,3})(\d{0,4})$/);
     if (match) {
@@ -24,6 +29,8 @@ const TextInputExample = () => {
       Alert.alert('Lỗi', 'Vui lòng nhập đủ 10 số điện thoại.');
     } else {
       Alert.alert('Thông báo', 'Đang tiến hành đăng nhập với số điện thoại: ' + number);
+      // Điều hướng đến HomeScreen
+      navigation.navigate('Home');
     }
   };
 
@@ -42,12 +49,39 @@ const TextInputExample = () => {
         value={number}
         placeholder="Nhập số điện thoại của bạn"
         keyboardType="phone-pad"
-        maxLength={13} // Chiều dài tối đa cho định dạng xxxxxx-xxxx-xxxx
+        maxLength={13}
       />
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Tiếp tục</Text>
       </TouchableOpacity>
     </SafeAreaView>
+  );
+};
+
+const HomeScreen = () => {
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Chào mừng đến với trang chính!</Text>
+    </SafeAreaView>
+  );
+};
+
+const App = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="SignIn">
+        <Stack.Screen 
+          name="SignIn" 
+          component={SignInScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="Home" 
+          component={HomeScreen} 
+          options={{ headerShown: true, title: 'Trang chính' }} 
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 
@@ -93,6 +127,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
   },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginTop: 20,
+  },
 });
 
-export default TextInputExample;
+export default App;
